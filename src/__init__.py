@@ -23,10 +23,8 @@ import re
 # Uncommonly Used Libraries
 from sklearn.utils.class_weight import compute_class_weight
 from sklearn.model_selection import train_test_split
-from IPython.display import display, Markdown
 from dataclasses import dataclass, asdict
 from distutils.dir_util import copy_tree
-from IPython.display import clear_output
 from collections import defaultdict
 import matplotlib.pyplot as plt
 from IPython import get_ipython
@@ -36,17 +34,30 @@ import warnings
 import shutil
 import math
 import glob
+import yaml
 import json
 import cv2
 import gc
-
 import wandb
+
+from IPython.core.magic import register_line_cell_magic
+from IPython.display import display, Markdown
+from IPython.display import clear_output
+from IPython import get_ipython
 
 # Package Imports
 from .core import (
     ENV, HARDWARE, IS_ONLINE, KAGGLE_INPUT_DIR, WORKING_DIR, TMP_DIR,
     red, blue, green, yellow,
 )
+
+# Install omegaconf if not already available
+try:
+    from omegaconf import OmegaConf
+except:
+    print('Installing omeaconf')
+    os.system('pip install -q omegaconf')
+    from omegaconf import OmegaConf
 
 
 def _setup_jupyter_notebook():
@@ -81,6 +92,18 @@ def _colab_mount_drive():
     drive.mount('/content/drive')
 if ENV == 'Colab':
     _colab_mount_drive()
+
+# Hyperparameters Magic Command
+@register_line_cell_magic
+def hyperparameters(_, cell):
+    'Magic command to write hyperparameters into a yaml file and load it with omegaconf'
+    # Save hyperparameters in experiment.yaml
+    with open('experiment.yaml', 'w') as f:
+        f.write(cell)
+
+    # Load the YAML file into the variable HP
+    HP = OmegaConf.load('experiment.yaml')
+    get_ipython().user_ns['HP'] = HP
 
 # Competition Specific Constants & Functions
 COMP_NAME = 'sartorius-cell-instance-segmentation'
