@@ -78,12 +78,12 @@ def _ignore_deprecation_warnings():
 _ignore_deprecation_warnings()
 
 # Startup Notebook Functions
-REPO_PATH = 'https://github.com/sarthak-314/chai-v2'
+REPO_PATH = 'https://github.com/sarthak-314/cell'
 def sync():
     'Sync Notebook with VS Code'
-    os.chdir(WORKING_DIR/'chai-v2')
+    os.chdir(WORKING_DIR/'cell')
     subprocess.run(['git', 'pull'])
-    sys.path.append(str(WORKING_DIR/'chai-v2'))
+    sys.path.append(str(WORKING_DIR/'cell'))
     os.chdir(WORKING_DIR)
 
 # Mount Drive in Colab
